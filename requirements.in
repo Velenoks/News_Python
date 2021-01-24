@@ -1,0 +1,8 @@
+requests
+django
+djangorestframework
+django-filter
+djangorestframework-simplejwt
+django-debug-toolbar
+django_extensions
+django-mptt
