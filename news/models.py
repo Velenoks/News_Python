@@ -24,7 +24,8 @@ class Category(models.Model):
 class News(models.Model):
     heading = models.CharField(max_length=200,
                                verbose_name='Заголовок',
-                               blank=True,)
+                               blank=True,
+                               unique=True,)
     pub_date = models.DateTimeField('Дата публикации',
                                     auto_now_add=True,)
     text = models.TextField(verbose_name='Текст новости',)
@@ -33,7 +34,7 @@ class News(models.Model):
                                  default='Без категории',
                                  on_delete=models.SET_DEFAULT,
                                  verbose_name='Категория',
-                                 related_name='titles')
+                                 related_name='news')
     image = models.ImageField(upload_to='posts/',
                               verbose_name='Картинка',
                               blank=True,)
