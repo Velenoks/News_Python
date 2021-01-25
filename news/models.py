@@ -35,7 +35,7 @@ class News(models.Model):
                                  on_delete=models.SET_DEFAULT,
                                  verbose_name='Категория',
                                  related_name='news')
-    image = models.ImageField(upload_to='posts/',
+    image = models.ImageField(upload_to='news/',
                               verbose_name='Картинка',
                               blank=True,)
 

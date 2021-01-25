@@ -13,7 +13,7 @@ router.register(r'categories',
 router.register(r'news',
                 views.TitleViewSet,
                 basename=app_name)
-router.register(r'news/(?P<title_id>\d+)/comments',
+router.register(r'news/(?P<news_id>\d+)/comments',
                 views.ReviewViewSet,
                 basename=app_name)
 

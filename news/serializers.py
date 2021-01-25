@@ -10,7 +10,7 @@ class CategorySerializer(serializers.ModelSerializer):
         model = Category
 
 
-class TitleSerializer(serializers.ModelSerializer):
+class NewsSerializer(serializers.ModelSerializer):
     category = CategorySerializer(read_only=True,)
 
     class Meta:
