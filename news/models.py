@@ -1,5 +1,6 @@
 from django.contrib.auth import get_user_model
 from django.db import models
+from mptt.models import MPTTModel, TreeForeignKey
 
 
 User = get_user_model()
@@ -48,7 +49,7 @@ class News(models.Model):
         return self.heading
 
 
-class Comment(models.Model):
+class Comment(MPTTModel):
     news = models.ForeignKey(News,
                              verbose_name='Новость',
                              on_delete=models.CASCADE,
@@ -60,8 +61,14 @@ class Comment(models.Model):
                                related_name='comments',)
     pub_date = models.DateTimeField('Дата добавления',
                                     auto_now_add=True,)
+    parent = TreeForeignKey('self', on_delete=models.CASCADE,
+                            null=True, blank=True,
+                            related_name='children',)
 
     class Meta:
-        ordering = ('-pub_date',)
         verbose_name = 'Комментарий'
         verbose_name_plural = 'Комментарии'
+
+    class MPTTMeta:
+        order_insertin_by = ['text']
+
