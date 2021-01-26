@@ -11,10 +11,10 @@ router.register(r'categories',
                 views.CategoryViewSet,
                 basename=app_name)
 router.register(r'news',
-                views.TitleViewSet,
+                views.NewsViewSet,
                 basename=app_name)
 router.register(r'news/(?P<news_id>\d+)/comments',
-                views.ReviewViewSet,
+                views.CommentViewSet,
                 basename=app_name)
 
 urlpatterns = [

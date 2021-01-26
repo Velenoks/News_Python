@@ -63,8 +63,12 @@ WSGI_APPLICATION = 'api_news.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'NewsPython',
+        'USER': 'postgres',
+        'PASSWORD': 'Pav123456Zak',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
 
@@ -106,7 +110,10 @@ REST_FRAMEWORK = {
     'PAGE_SIZE': 15
 }
 
-AUTH_USER_MODEL = 'users.User'
+# AUTH_USER_MODEL = 'users.User'
+
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
