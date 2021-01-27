@@ -1,10 +1,13 @@
 import os
 from datetime import timedelta
 from pathlib import Path
+from dotenv import load_dotenv
 
+
+load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = '7-k#0$28%z2-*lvf0w)^tn6rv4-@z2w!5qk4fa3=!lfty2=g0='
+SECRET_KEY = os.getenv('SECRET_KEY')
 
 DEBUG = True
 
@@ -67,7 +70,7 @@ DATABASES = {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'NAME': 'NewsPython',
         'USER': 'postgres',
-        'PASSWORD': 'Pav123456Zak',
+        'PASSWORD': os.getenv('PASSWORD_DB'),
         'HOST': 'localhost',
         'PORT': '5432',
     }
