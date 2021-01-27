@@ -11,7 +11,19 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class NewsSerializer(serializers.ModelSerializer):
-    category = CategorySerializer(read_only=True,)
+    category = CategorySerializer(required=False)
+
+    class Meta:
+        fields = '__all__'
+        model = News
+
+
+class NewsPostSerializer(serializers.ModelSerializer):
+    category = serializers.SlugRelatedField(
+        slug_field="slug",
+        queryset=Category.objects.all(),
+        required=True,
+    )
 
     class Meta:
         fields = '__all__'
@@ -26,5 +38,5 @@ class CommentSerializer(serializers.ModelSerializer):
     )
 
     class Meta:
-        fields = '__all__'
+        fields = ('id', 'author', 'text', 'pub_date', 'parent')
         model = Comment

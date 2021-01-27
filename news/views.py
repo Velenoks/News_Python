@@ -2,13 +2,13 @@ from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, viewsets
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticatedOrReadOnly
+from rest_framework.permissions import IsAuthenticatedOrReadOnly, SAFE_METHODS
 
 from .filters import NewsFilter
 from .models import Category, Comment, News
 from .permissions import IsAdmin, IsAuthorOrAdminOrReadOnly
 from .serializers import (CategorySerializer, CommentSerializer,
-                          NewsSerializer)
+                          NewsSerializer, NewsPostSerializer)
 
 
 class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
@@ -25,19 +25,13 @@ class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all()
     serializer_class = NewsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAdmin,)
-    filter_backends = [DjangoFilterBackend]
+    filter_backends = (DjangoFilterBackend,)
     filterset_class = NewsFilter
 
-    def perform_create(self, serializer):
-        data = self.request.data
-        category_slug = data['category']
-        category = get_object_or_404(Category, slug=category_slug,)
-        serializer.save(category=category,)
-
-    def perform_update(self, serializer):
-        category_slug = self.request.data['category']
-        category = get_object_or_404(Category, slug=category_slug,)
-        serializer.save(category=category,)
+    def get_serializer_class(self):
+        if self.request.method in SAFE_METHODS:
+            return NewsSerializer
+        return NewsPostSerializer
 
 
 class CommentViewSet(viewsets.ModelViewSet):

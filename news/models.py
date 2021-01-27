@@ -9,9 +9,9 @@ User = get_user_model()
 class Category(models.Model):
     name = models.CharField(max_length=200,
                             verbose_name='Категория',
-                            blank=True,)
+                            blank=True, )
     slug = models.SlugField(unique=True,
-                            verbose_name='Slug',)
+                            verbose_name='Slug', )
 
     class Meta:
         ordering = ('-id',)
@@ -26,10 +26,10 @@ class News(models.Model):
     heading = models.CharField(max_length=200,
                                verbose_name='Заголовок',
                                blank=True,
-                               unique=True,)
+                               unique=True, )
     pub_date = models.DateTimeField('Дата публикации',
-                                    auto_now_add=True,)
-    text = models.TextField(verbose_name='Текст новости',)
+                                    auto_now_add=True, )
+    text = models.TextField(verbose_name='Текст новости', )
     category = models.ForeignKey(Category,
                                  blank=True,
                                  default='Без категории',
@@ -38,7 +38,7 @@ class News(models.Model):
                                  related_name='news')
     image = models.ImageField(upload_to='news/',
                               verbose_name='Картинка',
-                              blank=True,)
+                              blank=True, )
 
     class Meta:
         ordering = ('-pub_date',)
@@ -53,17 +53,17 @@ class Comment(MPTTModel):
     news = models.ForeignKey(News,
                              verbose_name='Новость',
                              on_delete=models.CASCADE,
-                             related_name='comments',)
-    text = models.TextField(verbose_name='Текст коментария',)
+                             related_name='comments', )
+    text = models.TextField(verbose_name='Текст коментария', )
     author = models.ForeignKey(User,
                                verbose_name='Автор',
                                on_delete=models.CASCADE,
-                               related_name='comments',)
+                               related_name='comments', )
     pub_date = models.DateTimeField('Дата добавления',
-                                    auto_now_add=True,)
+                                    auto_now_add=True, )
     parent = TreeForeignKey('self', on_delete=models.CASCADE,
                             null=True, blank=True,
-                            related_name='children',)
+                            related_name='children', )
 
     class Meta:
         verbose_name = 'Комментарий'
@@ -72,3 +72,7 @@ class Comment(MPTTModel):
     class MPTTMeta:
         order_insertin_by = ['text']
 
+    def save(self, *args, **kwargs):
+        if self.parent is not None and self.parent.level == 5:
+            raise ValueError(u'Достигнута максимальная вложенность!')
+        super(Comment, self).save(*args, **kwargs)
