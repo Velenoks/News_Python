@@ -25,7 +25,6 @@ class Category(models.Model):
 class News(models.Model):
     heading = models.CharField(max_length=200,
                                verbose_name='Заголовок',
-                               blank=True,
                                unique=True, )
     pub_date = models.DateTimeField('Дата публикации',
                                     auto_now_add=True, )
@@ -41,7 +40,6 @@ class News(models.Model):
                               blank=True, )
 
     class Meta:
-        ordering = ('-pub_date',)
         verbose_name = 'Новость'
         verbose_name_plural = 'Новости'
 

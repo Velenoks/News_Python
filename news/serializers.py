@@ -12,6 +12,7 @@ class CategorySerializer(serializers.ModelSerializer):
 
 class NewsSerializer(serializers.ModelSerializer):
     category = CategorySerializer(required=False)
+    comment = serializers.IntegerField(read_only=True, )
 
     class Meta:
         fields = '__all__'

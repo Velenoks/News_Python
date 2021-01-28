@@ -1,8 +1,10 @@
+from django.db.models import Count
 from django.shortcuts import get_object_or_404
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import mixins, viewsets
 from rest_framework.filters import SearchFilter
-from rest_framework.permissions import IsAuthenticatedOrReadOnly, SAFE_METHODS
+from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
+                                        IsAuthenticated, SAFE_METHODS,)
 
 from .filters import NewsFilter
 from .models import Category, Comment, News
@@ -22,7 +24,9 @@ class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
 
 
 class NewsViewSet(viewsets.ModelViewSet):
-    queryset = News.objects.all()
+    queryset = News.objects.all().annotate(
+        comment=Count('comments__news')
+    ).order_by('-pub_date')
     serializer_class = NewsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
@@ -36,7 +40,7 @@ class NewsViewSet(viewsets.ModelViewSet):
 
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = (IsAuthenticatedOrReadOnly,
+    permission_classes = (IsAuthenticated,
                           IsAuthorOrAdminOrReadOnly)
 
     def get_queryset(self):
