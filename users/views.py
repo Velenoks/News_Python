@@ -9,7 +9,7 @@ from rest_framework_simplejwt.tokens import RefreshToken
 
 from .models import User
 from .permissions import AdminOnlyPermission, AdminOrAuthorPermission
-from .serializers import UserSerializer
+from .serializers import UserSerializer, UserSerializerForAdmin
 
 
 USER_DOES_NOT_EXIST = ('Ошибка при отправке запроса: '
@@ -22,14 +22,14 @@ FROM_EMAIL = 'api@yamdb.ru'
 def auth(request):
     email = request.data['email']
     username = email[0:email.find('@')]
-    serializer = UserSerializer(
+    serializer = UserSerializerForAdmin(
         data={
             'email': email,
             'username': username
         }
     )
     serializer.is_valid(raise_exception=True)
-    serializer.save(last_login=None, is_active=False)
+    serializer.save(last_login=None)
     user = User.objects.get_or_create(
         email=serializer.validated_data['email'],
         username=serializer.validated_data['username']
@@ -50,22 +50,34 @@ def auth(request):
 @permission_classes([AllowAny])
 def get_token(request):
     email = request.data['email']
-    confirmation_code = request.data['confirmation_code']
     user = get_object_or_404(User, email=email)
+    if user.is_superuser:
+        tokens = RefreshToken.for_user(user)
+        data = {
+            'access': str(tokens.access_token),
+            'refresh': str(tokens),
+        }
+        return Response(data, status=status.HTTP_201_CREATED)
+    confirmation_code = request.data['confirmation_code']
     if user and default_token_generator.check_token(user, confirmation_code):
         tokens = RefreshToken.for_user(user)
         data = {
+            'access': str(tokens.access_token),
             'refresh': str(tokens),
-            'access': str(tokens.access_token)
         }
         return Response(data, status=status.HTTP_201_CREATED)
     return Response(USER_DOES_NOT_EXIST, status.HTTP_400_BAD_REQUEST)
 
 
 class UserViewSet(viewsets.ModelViewSet):
+
     queryset = User.objects.all()
-    serializer_class = UserSerializer
+    serializer_class = UserSerializerForAdmin
     permission_classes = (AdminOnlyPermission,)
+
+    def get_object(self):
+        user = get_object_or_404(User, username=self.kwargs['pk'])
+        return user
 
     @action(
         detail=False,
@@ -85,5 +97,5 @@ class UserViewSet(viewsets.ModelViewSet):
             )
             serializer.is_valid(raise_exception=True)
             serializer.save()
-            return Response(serializer.data)
+            return Response(serializer.data, status=status.HTTP_200_OK)
         raise Exception('Not implemented')

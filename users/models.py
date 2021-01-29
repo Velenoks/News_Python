@@ -10,6 +10,9 @@ class User(AbstractUser):
                                 unique=True,
                                 blank=False,
                                 verbose_name='Имя пользователе')
+    photo = models.ImageField(upload_to='users/',
+                              verbose_name='Фото',
+                              blank=True, )
 
     class Meta:
         ordering = ['-id']

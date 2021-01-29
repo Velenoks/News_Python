@@ -5,6 +5,19 @@ from rest_framework import serializers
 User = get_user_model()
 
 
+class UserSerializerForAdmin(serializers.ModelSerializer):
+    class Meta:
+        fields = (
+            'first_name',
+            'last_name',
+            'username',
+            'email',
+            'photo',
+            'is_active'
+        )
+        model = User
+
+
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         fields = (
@@ -12,7 +25,6 @@ class UserSerializer(serializers.ModelSerializer):
             'last_name',
             'username',
             'email',
-            'is_active',
-            'is_superuser',
+            'photo',
         )
         model = User
