@@ -1,8 +1,15 @@
 from rest_framework import permissions
 
+from users.models import UserStatus
+
 
 class IsAuthorOrAdminOrReadOnly(permissions.BasePermission):
     """Проверка на Автора и Админа."""
+    def has_permission(self, request, view):
+        return (request.method in permissions.SAFE_METHODS or
+                request.user.is_authenticated and
+                UserStatus.MUTE != request.user.status)
+
     def has_object_permission(self, request, view, obj):
         return (request.method in permissions.SAFE_METHODS
                 or request.user.is_superuser
