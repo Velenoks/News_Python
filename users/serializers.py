@@ -14,7 +14,7 @@ class UserSerializerForAdmin(serializers.ModelSerializer):
             'email',
             'photo',
             'last_login',
-            'is_active',
+            'status',
         )
         model = User
 
