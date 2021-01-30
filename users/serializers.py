@@ -15,6 +15,7 @@ class UserSerializerForAdmin(serializers.ModelSerializer):
             'photo',
             'last_login',
             'status',
+            'is_superuser',
         )
         model = User
 

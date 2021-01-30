@@ -8,15 +8,14 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
+from api_news.settings import FROM_EMAIL
 from .models import User
 from .permissions import AdminOnlyPermission, AdminOrAuthorPermission
 from .serializers import UserSerializer, UserSerializerForAdmin
 
-
 USER_DOES_NOT_EXIST = ('Ошибка при отправке запроса: '
                        'такого пользователя нет в базе данных')
 PASSWORD_ERROR = 'Пароли не совпадают'
-FROM_EMAIL = 'api@yamdb.ru'
 
 
 @api_view(['POST'])
@@ -71,7 +70,6 @@ def get_token(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
-
     queryset = User.objects.all()
     serializer_class = UserSerializerForAdmin
     permission_classes = (AdminOnlyPermission,)
@@ -80,10 +78,31 @@ class UserViewSet(viewsets.ModelViewSet):
         user = get_object_or_404(User, username=self.kwargs['pk'])
         return user
 
+    def perform_update(self, serializer, *args, **kwargs):
+        username = self.kwargs['pk']
+        user = get_object_or_404(User, username=username)
+        if 'status' in serializer.validated_data.keys():
+            if serializer.validated_data['status'] == 'mute':
+                send_mail(subject='Status MUTE :(',
+                          message=('Нам пришлось ограчить вашу возможность '
+                                   'оставлять комментарии, вы нарушили '
+                                   'правила размещения коментариев.'),
+                          from_email=FROM_EMAIL,
+                          recipient_list=[user.email],
+                          fail_silently=False)
+            elif serializer.validated_data['status'] == 'user':
+                send_mail(subject='Status USER :)',
+                          message=('Поздравляю, вы можете снова оставлять  '
+                                   'комментарии к новостям!'),
+                          from_email=FROM_EMAIL,
+                          recipient_list=[user.email],
+                          fail_silently=False)
+        serializer.save()
+
     @action(
         detail=False,
         methods=['get', 'patch'],
-        permission_classes=(AdminOrAuthorPermission, )
+        permission_classes=(AdminOrAuthorPermission,)
     )
     def me(self, request):
         self.kwargs['pk'] = request.user.username
