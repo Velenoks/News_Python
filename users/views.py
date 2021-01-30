@@ -1,4 +1,5 @@
 from django.core.mail import send_mail
+from django.contrib.auth.hashers import make_password
 from django.contrib.auth.tokens import default_token_generator
 from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
@@ -14,6 +15,7 @@ from .serializers import UserSerializer, UserSerializerForAdmin
 
 USER_DOES_NOT_EXIST = ('Ошибка при отправке запроса: '
                        'такого пользователя нет в базе данных')
+PASSWORD_ERROR = 'Пароли не совпадают'
 FROM_EMAIL = 'api@yamdb.ru'
 
 
@@ -22,7 +24,7 @@ FROM_EMAIL = 'api@yamdb.ru'
 def auth(request):
     email = request.data['email']
     username = email[0:email.find('@')]
-    serializer = UserSerializerForAdmin(
+    serializer = UserSerializer(
         data={
             'email': email,
             'username': username
@@ -32,7 +34,7 @@ def auth(request):
     serializer.save(last_login=None)
     user = User.objects.get_or_create(
         email=serializer.validated_data['email'],
-        username=serializer.validated_data['username']
+        username=serializer.validated_data['username'],
     )
     confirmation_code = default_token_generator.make_token(user[0])
     send_mail(
@@ -51,15 +53,14 @@ def auth(request):
 def get_token(request):
     email = request.data['email']
     user = get_object_or_404(User, email=email)
-    if user.is_superuser:
-        tokens = RefreshToken.for_user(user)
-        data = {
-            'access': str(tokens.access_token),
-            'refresh': str(tokens),
-        }
-        return Response(data, status=status.HTTP_201_CREATED)
     confirmation_code = request.data['confirmation_code']
+    password = request.data['password']
+    password_check = request.data['password_check']
+    if password != password_check:
+        return Response(PASSWORD_ERROR, status.HTTP_400_BAD_REQUEST)
     if user and default_token_generator.check_token(user, confirmation_code):
+        user.password = make_password(password)
+        user.save()
         tokens = RefreshToken.for_user(user)
         data = {
             'access': str(tokens.access_token),
@@ -82,7 +83,7 @@ class UserViewSet(viewsets.ModelViewSet):
     @action(
         detail=False,
         methods=['get', 'patch'],
-        permission_classes=[AdminOrAuthorPermission]
+        permission_classes=(AdminOrAuthorPermission, )
     )
     def me(self, request):
         self.kwargs['pk'] = request.user.username

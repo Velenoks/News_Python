@@ -13,7 +13,8 @@ class UserSerializerForAdmin(serializers.ModelSerializer):
             'username',
             'email',
             'photo',
-            'is_active'
+            'last_login',
+            'is_active',
         )
         model = User
 
