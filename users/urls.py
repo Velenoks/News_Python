@@ -4,11 +4,12 @@ from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (TokenRefreshView,
                                             TokenObtainPairView)
 
-from .views import UserViewSet, auth, get_token
-
+from .views import UserViewSet, UserMeViewSet, auth, get_token
 
 router = DefaultRouter()
 router.register(r'users', UserViewSet, basename='users')
+router.register(r'users/me',
+                UserMeViewSet, basename='users_me')
 
 urlpatterns = [
     path('v1/auth/email/', csrf_exempt(auth)),
