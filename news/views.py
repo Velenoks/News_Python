@@ -28,7 +28,7 @@ class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all().annotate(
         comment=Count('comments__news')
-    ).order_by('-pub_date')
+    ).prefetch_related('category').order_by('-pub_date')
     serializer_class = NewsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
@@ -47,7 +47,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         news_id = self.kwargs['news_id']
-        return Comment.objects.filter(news=news_id)
+        return Comment.objects.filter(
+            news=news_id
+        ).prefetch_related('news', 'author')
 
     def perform_create(self, serializer, *args, **kwargs):
         news_id = self.kwargs['news_id']
