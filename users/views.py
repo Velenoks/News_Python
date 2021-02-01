@@ -30,6 +30,8 @@ def auth(request):
         email=serializer.validated_data['email'],
         username=serializer.validated_data['username'],
     )
+    user.set_password(user.password)
+    user.save()
     confirmation_code = default_token_generator.make_token(user)
     send_mail(subject='Confirmation Code',
               message=('Код подтверждения для получения токена: '

@@ -27,7 +27,3 @@ class User(AbstractUser):
 
     class Meta:
         ordering = ['-id']
-
-    def save(self, *args, **kwargs):
-        self.password = make_password(self.password)
-        super(User, self).save(*args, **kwargs)
