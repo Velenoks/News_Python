@@ -2,14 +2,14 @@ from rest_framework import permissions
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
-from api_news.settings import FROM_EMAIL
+from api_news.settings import EMAIL_HOST_USER
 
 schema_view = get_schema_view(
     openapi.Info(
         title='API для новостного портала',
         default_version='v1',
         description=(
-            'Pапросы к API начинаются с `/api/v1/`\n\n'
+            'Запросы к API начинаются с `/api/v1/`. Перед работой обязательно проверь переменные в файле **.env**.\n\n'
             '**Описание**\n'
             'Данное API разработанно для новостного портала с возможностью регистрации пользователей, просмотра новостей и коментариев к ним.\n\n'
             '**Алгоритм регистрации пользователей**\n'
@@ -23,10 +23,11 @@ schema_view = get_schema_view(
             '- **Заблокированный пользователь** — те же права, что и у **Аутентифицированного пользователя**, но отсуствует возможность писать и редактировать комментарии.\n '
             '- **Администратор** — полные права на управление проектом и всем его содержимым. Может создавать и удалять новости и комментарии. Может назначать роли пользователям.\n\n'
             '**Создание Администратора**\n'
-            'Приложение иметь возможность создавать администратора запуском команды из консоли `python manage.py createsuperuser`.\n'
+            'Приложение имеет возможность создавать администратора запуском команды из консоли `python manage.py initadmin`. Команда применяется при запуске контейнеров.\n\n'
+            'Дефолтные значения `username=admin`, `email=admin@newspy.com` и `password=admin`, если они не прописаны в **.env** файле. \n\n'
             'Так же любой Администратор может назначить любого пользователя Администратором. \n'
         ),
-        contact=openapi.Contact(email=FROM_EMAIL),
+        contact=openapi.Contact(email=EMAIL_HOST_USER),
         license=openapi.License(name='BSD-3-Clause License')
     ),
     public=True,

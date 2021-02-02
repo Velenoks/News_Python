@@ -7,7 +7,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
                                         IsAuthenticated, SAFE_METHODS, )
 
-from api_news.settings import FROM_EMAIL
+from api_news.settings import EMAIL_HOST_USER
 from .filters import NewsFilter
 from .models import Category, Comment, News
 from .permissions import IsAdmin, IsAuthorOrAdminOrReadOnly
@@ -69,6 +69,6 @@ class CommentViewSet(viewsets.ModelViewSet):
                   message=('К твоему коментарию пользователь '
                            f'{self.request.user.username} оставил свой '
                            'комментарий, иди скорее читай'),
-                  from_email=FROM_EMAIL,
+                  from_email=EMAIL_HOST_USER,
                   recipient_list=[user.email],
                   fail_silently=False)

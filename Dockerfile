@@ -7,7 +7,8 @@ WORKDIR /usr/src/newspy
 
 RUN apk update \
     && apk add postgresql-dev gcc python3-dev musl-dev \
-    && apk add jpeg-dev zlib-dev libjpeg
+    && apk add jpeg-dev zlib-dev libjpeg \
+    && apk add bash
 
 
 RUN pip install --upgrade pip

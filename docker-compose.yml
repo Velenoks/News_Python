@@ -3,8 +3,7 @@ version: '3.7'
 services:
   web_news:
     build: .
-    command: python /usr/src/newspy/manage.py migrate
-    command: python /usr/src/newspy/manage.py runserver 0.0.0.0:8000
+    command: bash -c "python /usr/src/newspy/manage.py migrate && python /usr/src/newspy/manage.py initadmin && python manage.py runserver 0.0.0.0:8000"
     volumes:
       - .:/usr/src/newspy
     ports:

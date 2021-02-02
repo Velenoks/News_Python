@@ -8,7 +8,7 @@ from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from api_news.settings import FROM_EMAIL
+from api_news.settings import EMAIL_HOST_USER
 from .models import User
 from .permissions import AdminOnlyPermission, AdminOrAuthorPermission
 from .serializers import (UserSerializer, UserSerializerForAdmin,
@@ -36,7 +36,7 @@ def auth(request):
     send_mail(subject='Confirmation Code',
               message=('Код подтверждения для получения токена: '
                        f'{confirmation_code}'),
-              from_email=FROM_EMAIL,
+              from_email=EMAIL_HOST_USER,
               recipient_list=[user.email],
               fail_silently=False, )
     return Response(serializer.validated_data, status=status.HTTP_201_CREATED)
@@ -79,14 +79,14 @@ class UserViewSet(viewsets.ModelViewSet):
                           message=('Нам пришлось ограчить вашу возможность '
                                    'оставлять комментарии, вы нарушили '
                                    'правила размещения коментариев.'),
-                          from_email=FROM_EMAIL,
+                          from_email=EMAIL_HOST_USER,
                           recipient_list=[user.email],
                           fail_silently=False)
             elif serializer.validated_data['status'] == 'user':
                 send_mail(subject='Status USER :)',
                           message=('Поздравляю, вы можете снова оставлять  '
                                    'комментарии к новостям!'),
-                          from_email=FROM_EMAIL,
+                          from_email=EMAIL_HOST_USER,
                           recipient_list=[user.email],
                           fail_silently=False)
         serializer.save()

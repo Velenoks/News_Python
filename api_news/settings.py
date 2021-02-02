@@ -124,9 +124,16 @@ AUTH_USER_MODEL = 'users.User'
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
-FROM_EMAIL = 'api@yamdb.ru'
+if DEBUG:
+    EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+    EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'sent_emails')
+    EMAIL_HOST_USER = 'apidebug@news.ru'
+else:
+    EMAIL_HOST = os.environ.get("EMAIL_HOST", "smtp.gmail.com")
+    EMAIL_HOST_USER = os.environ.get("EMAIL_HOST_USER", "your_account@gmail.com")
+    EMAIL_HOST_PASSWORD = os.environ.get("EMAIL_HOST_PASSWORD", "your_password")
+    EMAIL_PORT = int(os.environ.get("EMAIL_PORT", default=587))
+    EMAIL_USE_TLS = int(os.environ.get("EMAIL_USE_TLS", default=1))
 
 CORS_ALLOW_ALL_ORIGINS = True
 CORS_URLS_REGEX = r'^/api/.*$'
