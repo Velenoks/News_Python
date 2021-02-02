@@ -11,11 +11,8 @@ RUN apk update \
 
 
 RUN pip install --upgrade pip
-COPY requirements.in /usr/src/requirements.in
+
+COPY ./requirements.in /usr/src/requirements.in
 RUN pip install -r /usr/src/requirements.in
 
 COPY . /usr/src/newspy
-
-#EXPOSE 8000
-#CMD ["python", "manage.py", "migrate"]
-#CMD ["python", "manage.py", "runserver", "127.0.0.1:8000"]
