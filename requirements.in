@@ -9,4 +9,4 @@ django-mptt
 Pillow
 psycopg2
 django-cors-headers
-python-dotenv
+drf-yasg

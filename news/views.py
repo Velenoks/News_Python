@@ -7,7 +7,7 @@ from rest_framework.filters import SearchFilter
 from rest_framework.permissions import (IsAuthenticatedOrReadOnly,
                                         IsAuthenticated, SAFE_METHODS, )
 
-from api_news.settings import FROM_EMAIL
+from api_news.settings import EMAIL_HOST_USER
 from .filters import NewsFilter
 from .models import Category, Comment, News
 from .permissions import IsAdmin, IsAuthorOrAdminOrReadOnly
@@ -28,7 +28,7 @@ class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
 class NewsViewSet(viewsets.ModelViewSet):
     queryset = News.objects.all().annotate(
         comment=Count('comments__news')
-    ).order_by('-pub_date')
+    ).prefetch_related('category').order_by('-pub_date')
     serializer_class = NewsSerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAdmin,)
     filter_backends = (DjangoFilterBackend,)
@@ -47,7 +47,9 @@ class CommentViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self):
         news_id = self.kwargs['news_id']
-        return Comment.objects.filter(news=news_id)
+        return Comment.objects.filter(
+            news=news_id
+        ).prefetch_related('news', 'author')
 
     def perform_create(self, serializer, *args, **kwargs):
         news_id = self.kwargs['news_id']
@@ -67,6 +69,6 @@ class CommentViewSet(viewsets.ModelViewSet):
                   message=('К твоему коментарию пользователь '
                            f'{self.request.user.username} оставил свой '
                            'комментарий, иди скорее читай'),
-                  from_email=FROM_EMAIL,
+                  from_email=EMAIL_HOST_USER,
                   recipient_list=[user.email],
                   fail_silently=False)
