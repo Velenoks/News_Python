@@ -4,13 +4,14 @@ from .models import Category, Comment, News
 
 
 class CategorySerializer(serializers.ModelSerializer):
-
+    """Сериализатор для Комментриев."""
     class Meta:
         exclude = ('id',)
         model = Category
 
 
 class NewsSerializer(serializers.ModelSerializer):
+    """Сериализатор для Новостей, Safe Methods."""
     category = CategorySerializer(required=False)
     comment = serializers.IntegerField(read_only=True, )
 
@@ -20,6 +21,7 @@ class NewsSerializer(serializers.ModelSerializer):
 
 
 class NewsPostSerializer(serializers.ModelSerializer):
+    """Сериализатор для Новостей, don't Safe Methods."""
     category = serializers.SlugRelatedField(
         slug_field="slug",
         queryset=Category.objects.all(),
@@ -32,6 +34,7 @@ class NewsPostSerializer(serializers.ModelSerializer):
 
 
 class CommentSerializer(serializers.ModelSerializer):
+    """Сериализатор для Комментариев."""
     author = serializers.SlugRelatedField(
         slug_field='username',
         read_only=True,

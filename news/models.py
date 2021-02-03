@@ -7,6 +7,7 @@ User = get_user_model()
 
 
 class Category(models.Model):
+    """Модель для Категорий."""
     name = models.CharField(max_length=200,
                             verbose_name='Категория',
                             blank=True, )
@@ -23,6 +24,7 @@ class Category(models.Model):
 
 
 class News(models.Model):
+    """Модель для новостей."""
     heading = models.CharField(max_length=200,
                                verbose_name='Заголовок',
                                unique=True, )
@@ -48,6 +50,7 @@ class News(models.Model):
 
 
 class Comment(MPTTModel):
+    """Модель для Комментариев."""
     news = models.ForeignKey(News,
                              verbose_name='Новость',
                              on_delete=models.CASCADE,
@@ -70,7 +73,7 @@ class Comment(MPTTModel):
     class MPTTMeta:
         order_insertin_by = ['text']
 
-    def save(self, *args, **kwargs):
+    def save(self, *args, **kwargs):  # Проверка на максимальную вложенность
         if self.parent is not None and self.parent.level == 5:
             raise ValueError(u'Достигнута максимальная вложенность!')
         super(Comment, self).save(*args, **kwargs)

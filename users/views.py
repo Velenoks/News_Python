@@ -22,6 +22,7 @@ USER_DOES_NOT_EXIST = ('Ошибка при отправке запроса: '
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def auth(request):
+    """Регистрация нового пользователя."""
     serializer = UserSerializerForAuth(data=request.data)
     serializer.is_valid(raise_exception=True)
     del serializer.validated_data['password_check']
@@ -45,6 +46,7 @@ def auth(request):
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def get_token(request):
+    """Подтверждение регистрации."""
     serializer = CodeSerializerForAuth(data=request.data)
     serializer.is_valid(raise_exception=True)
     email = serializer.validated_data['email']
@@ -63,6 +65,7 @@ def get_token(request):
 
 
 class UserViewSet(viewsets.ModelViewSet):
+    """ViewSet для Администратора."""
     queryset = User.objects.all()
     serializer_class = UserSerializerForAdmin
     permission_classes = (AdminOnlyPermission,)
@@ -94,7 +97,7 @@ class UserViewSet(viewsets.ModelViewSet):
 
 class UserMeViewSet(mixins.RetrieveModelMixin, mixins.UpdateModelMixin,
                     viewsets.GenericViewSet):
-
+    """ViewSet для пользователей."""
     serializer_class = UserSerializer
     permission_classes = (AdminOrAuthorPermission,)
     lookup_field = 'username'
