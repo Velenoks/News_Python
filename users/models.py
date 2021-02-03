@@ -1,14 +1,15 @@
-from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
 
 class UserStatus(models.TextChoices):
+    """Статусы пользователей."""
     MUTE = 'mute'
     USER = 'user'
 
 
 class User(AbstractUser):
+    """Модель для Пользователей."""
     email = models.EmailField(unique=True,
                               db_index=True,
                               verbose_name='Электронная почта')

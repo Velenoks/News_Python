@@ -17,6 +17,7 @@ from .serializers import (CategorySerializer, CommentSerializer,
 
 class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
                       mixins.DestroyModelMixin, viewsets.GenericViewSet):
+    """ViewSet для Категорий."""
     queryset = Category.objects.all()
     serializer_class = CategorySerializer
     permission_classes = (IsAuthenticatedOrReadOnly, IsAdmin,)
@@ -26,6 +27,7 @@ class CategoryViewSet(mixins.ListModelMixin, mixins.CreateModelMixin,
 
 
 class NewsViewSet(viewsets.ModelViewSet):
+    """ViewSet для Новостей."""
     queryset = News.objects.all().annotate(
         comment=Count('comments__news')
     ).prefetch_related('category').order_by('-pub_date')
@@ -41,6 +43,7 @@ class NewsViewSet(viewsets.ModelViewSet):
 
 
 class CommentViewSet(viewsets.ModelViewSet):
+    """ViewSet для Комментариев."""
     serializer_class = CommentSerializer
     permission_classes = (IsAuthenticated,
                           IsAuthorOrAdminOrReadOnly)
@@ -64,6 +67,7 @@ class CommentViewSet(viewsets.ModelViewSet):
         serializer.save()
 
     def email_about_comment(self, serializer):
+        """Отправка уведомления о вложенном комментарии."""
         user = serializer.validated_data['parent'].author
         send_mail(subject='Comment for you :)',
                   message=('К твоему коментарию пользователь '
